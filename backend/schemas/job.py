@@ -5,9 +5,11 @@ class JobCreateRequest(BaseModel):
     topic: str
 
 class JobResponse(BaseModel): 
-    job_id: int
+    id: int
+    session_id: str
+    story_id: Optional[int] = None
     status: str
-    error: Optional[str] = None
+    error_message: Optional[str] = None
 
     class Config: 
         from_attributes = True

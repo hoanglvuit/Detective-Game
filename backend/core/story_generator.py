@@ -19,25 +19,29 @@ class StoryGenerator:
     @classmethod 
     def generate_story(cls, topic: str, db: Session, session_id: str):
         llm = cls._get_llm()
+        if settings.DEBUG:
+            print(f"Generating story for topic: {topic}")
         parser = PydanticOutputParser(pydantic_object=StoryLLMResponse)
         prompt = ChatPromptTemplate.from_messages([
             ("system", PROMPT_TEMPLATE),
             ("user", "Tạo một câu chuyện trinh thám về chủ đề {topic}"),
         ])
         chain = prompt | llm | parser
-        response = chain.invoke({
+        story_structure = chain.invoke({
             "format_instruction": parser.get_format_instructions(),
             "topic": topic
         })
-        if hasattr(response, "content"): 
-            response = response.content 
         
-        story_structure = parser.parse(response) 
+        if settings.DEBUG:
+            print("Generate successfully") 
 
         # Fill story
         story_db = Story(title=story_structure.title, context=story_structure.context, session_id=session_id)
         db.add(story_db) 
         db.flush() 
+
+        if settings.DEBUG:
+            print("Filling story")
 
         # fill plot points
         for plot_point in story_structure.plot_points: 
@@ -49,6 +53,9 @@ class StoryGenerator:
             ) 
             db.add(plot_point_db) 
             db.flush() 
+
+        if settings.DEBUG:
+            print("Filling plot points")
         
         # fill suspects
         for suspect in story_structure.suspects:
@@ -65,6 +72,9 @@ class StoryGenerator:
             )
             db.add(suspect_db) 
             db.flush() 
+
+        if settings.DEBUG:
+            print("Filling suspects")
 
         db.commit()
 
