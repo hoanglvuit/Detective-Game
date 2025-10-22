@@ -1,3 +1,5 @@
 fastapi[all]
 uvicorn
 sqlalchemy
+langchain-google-genai
+langchain-core
