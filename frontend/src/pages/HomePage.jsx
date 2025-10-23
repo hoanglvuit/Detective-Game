@@ -109,7 +109,7 @@ function HomePage() {
               <div className="input-group">
                 <input
                   type="text"
-                  placeholder="Nhập Story ID (ví dụ: story_123456)"
+                  placeholder="Nhập Story ID (ví dụ: 1,2,3,4,5)"
                   value={storyId}
                   onChange={(e) => setStoryId(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && joinExistingStory()}

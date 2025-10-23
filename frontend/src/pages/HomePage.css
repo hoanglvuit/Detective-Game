@@ -3,7 +3,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0a0a 30%, #2d0a0a 60%, #1a0a0a 100%);
   color: #e0e0e0;
   position: relative;
   overflow-x: hidden;
@@ -17,9 +17,9 @@
   width: 100%;
   height: 100%;
   background: 
-    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+    radial-gradient(circle at 20% 80%, rgba(220, 20, 20, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(139, 0, 0, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 0, 0, 0.1) 0%, transparent 50%);
   animation: backgroundShift 20s ease-in-out infinite;
   z-index: -1;
 }
@@ -38,13 +38,13 @@
 
 .home-header h1 {
   font-size: 3.5rem;
-  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+  background: linear-gradient(45deg, #dc143c, #8b0000, #b22222, #ff0000);
   background-size: 400% 400%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: gradientShift 3s ease-in-out infinite;
-  text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+  text-shadow: 0 0 30px rgba(220, 20, 60, 0.7);
   margin-bottom: 1rem;
 }
 
@@ -99,9 +99,9 @@
 }
 
 .tab-button.active {
-  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  background: linear-gradient(45deg, #dc143c, #8b0000);
   color: white;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
 }
 
 /* Tab Content */
@@ -116,10 +116,11 @@
 }
 
 .tab-content h3 {
-  color: #4ecdc4;
+  color: #dc143c;
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
   text-align: center;
+  text-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
 }
 
 .tab-content p {
@@ -152,8 +153,8 @@
 
 .input-group input:focus {
   outline: none;
-  border-color: #4ecdc4;
-  box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+  border-color: #dc143c;
+  box-shadow: 0 0 20px rgba(220, 20, 60, 0.4);
   background: rgba(255, 255, 255, 0.15);
 }
 
@@ -179,11 +180,11 @@
 }
 
 .btn-primary {
-  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  background: linear-gradient(45deg, #dc143c, #8b0000);
 }
 
 .btn-secondary {
-  background: linear-gradient(45deg, #667eea, #764ba2);
+  background: linear-gradient(45deg, #8b0000, #4b0000);
 }
 
 .btn:hover {
@@ -206,11 +207,11 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(255, 65, 108, 0.1);
-  border: 1px solid rgba(255, 65, 108, 0.3);
+  background: rgba(139, 0, 0, 0.1);
+  border: 1px solid rgba(139, 0, 0, 0.3);
   border-radius: 10px;
   padding: 1rem;
-  color: #ff416c;
+  color: #8b0000;
   font-weight: bold;
   margin-top: 1rem;
   text-align: center;
@@ -241,7 +242,7 @@
   width: 50px;
   height: 50px;
   border: 4px solid rgba(255, 255, 255, 0.1);
-  border-top: 4px solid #4ecdc4;
+  border-top: 4px solid #dc143c;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -294,9 +295,10 @@
 }
 
 .feature-card h4 {
-  color: #4ecdc4;
+  color: #dc143c;
   font-size: 1.3rem;
   margin-bottom: 1rem;
+  text-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
 }
 
 .feature-card p {

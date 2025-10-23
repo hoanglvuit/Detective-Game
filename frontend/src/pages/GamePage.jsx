@@ -77,7 +77,7 @@ function GamePage() {
   }
 
   const selectSuspect = (suspect) => {
-    if (gameResult) return
+    if (gameResult && gameResult.showConfirm) return // Không cho chọn khi đang confirm
     setSelectedSuspect(suspect)
   }
 
@@ -87,31 +87,40 @@ function GamePage() {
     const isCorrect = selectedSuspect.is_killer
     const actualKiller = suspects.find(s => s.is_killer)
     
+    // Hiển thị confirm dialog
+    setGameResult({
+      correct: isCorrect,
+      killer: actualKiller,
+      selected: selectedSuspect,
+      isTemporary: false,
+      showConfirm: true
+    })
+  }
+
+  const confirmGuess = () => {
+    if (!gameResult) return
+
+    const isCorrect = gameResult.correct
+    
     if (isCorrect) {
-      setGameResult({
-        correct: true,
-        killer: selectedSuspect,
-        selected: selectedSuspect
-      })
-      setGameState('result')
+      // Đoán đúng - vẫn ở lại game để xem explanation
+      // Không chuyển sang result screen
     } else {
-      // Thêm vào danh sách đoán sai
-      setWrongGuesses(prev => [...prev, selectedSuspect])
-      setSelectedSuspect(null) // Reset selection để có thể chọn lại
-      
-      // Hiển thị thông báo đoán sai đơn giản
-      setGameResult({
-        correct: false,
-        killer: actualKiller,
-        selected: selectedSuspect,
-        isTemporary: true
-      })
-      
-      // Ẩn thông báo sau 3 giây
-      setTimeout(() => {
-        setGameResult(null)
-      }, 3000)
+      // Đoán sai - thêm vào danh sách đoán sai và reset
+      setWrongGuesses(prev => [...prev, gameResult.selected])
+      setSelectedSuspect(null)
     }
+    
+    // Clear confirm dialog
+    setGameResult(prev => ({
+      ...prev,
+      showConfirm: false
+    }))
+  }
+
+  const cancelGuess = () => {
+    // Cancel guess - clear confirm dialog
+    setGameResult(null)
   }
 
   const showSuspectExplanation = (suspect) => {
@@ -129,6 +138,11 @@ function GamePage() {
     navigate('/')
   }
 
+  const finishGame = () => {
+    // Chuyển sang màn hình kết quả khi người chơi muốn kết thúc
+    setGameState('result')
+  }
+
   const resetGame = () => {
     setGameState('game')
     setOpenedPlotPoints(new Set())
@@ -136,6 +150,7 @@ function GamePage() {
     setGameResult(null)
     setError(null)
     setWrongGuesses([])
+    setShowExplanation(null)
   }
 
   if (gameState === 'loading') {
@@ -183,10 +198,12 @@ function GamePage() {
           </div>
 
           <div className="game-phase">
-            <h3 style={{ marginBottom: '1rem', color: '#4ecdc4' }}>📋 Danh Sách Nghi Phạm</h3>
+            <h3 style={{ marginBottom: '1rem', color: '#dc143c' }}>📋 Danh Sách Nghi Phạm</h3>
             <div className="suspects-grid">
               {suspects.map((suspect, index) => {
                 const isWrongGuess = wrongGuesses.some(wg => wg.name === suspect.name)
+                const hasConfirmedGuess = gameResult && !gameResult.showConfirm
+                const isGuessedSuspect = gameResult && gameResult.selected && gameResult.selected.name === suspect.name
                 return (
                   <div
                     key={index}
@@ -222,10 +239,9 @@ function GamePage() {
                     
                     <div className="suspect-description">{suspect.description}</div>
                     
-                    {isWrongGuess && (
-                      <div className="wrong-guess-indicator">
-                        <span className="wrong-icon">❌</span>
-                        <span>Đã đoán sai</span>
+                    {/* Hiển thị explanation button chỉ cho suspect đã được đoán */}
+                    {hasConfirmedGuess && isGuessedSuspect && (
+                      <div className="explanation-section">
                         <button 
                           className="explanation-btn"
                           onClick={(e) => {
@@ -235,6 +251,13 @@ function GamePage() {
                         >
                           💭 Xem Explanation
                         </button>
+                      </div>
+                    )}
+                    
+                    {isWrongGuess && (
+                      <div className="wrong-guess-indicator">
+                        <span className="wrong-icon">❌</span>
+                        <span>Đã đoán sai</span>
                       </div>
                     )}
                     
@@ -253,7 +276,7 @@ function GamePage() {
           <div className="game-phase">
             <div className="plot-points">
               <div className="plot-points-header">
-                <h3 style={{ color: '#4ecdc4' }}>🔍 Manh Mối ({openedPlotPoints.size}/5)</h3>
+                <h3 style={{ color: '#dc143c' }}>🔍 Manh Mối ({openedPlotPoints.size}/5)</h3>
                 <div style={{ color: '#b0b0b0' }}>
                   Còn lại: {5 - openedPlotPoints.size} manh mối
                 </div>
@@ -295,7 +318,7 @@ function GamePage() {
 
           <div className="game-phase">
             <div style={{ textAlign: 'center' }}>
-              <h3 style={{ marginBottom: '1rem', color: '#ff6b6b' }}>
+              <h3 style={{ marginBottom: '1rem', color: '#dc143c' }}>
                 {selectedSuspect ? `Đã chọn: ${selectedSuspect.name}` : 'Chọn nghi phạm để đoán'}
               </h3>
               {wrongGuesses.length > 0 && (
@@ -306,22 +329,50 @@ function GamePage() {
               <button
                 className="btn btn-danger"
                 onClick={makeGuess}
-                disabled={!selectedSuspect}
+                disabled={!selectedSuspect || (gameResult && gameResult.showConfirm)}
               >
                 Đoán Kẻ Giết Người
               </button>
+              
+              {/* Hiển thị button kết thúc game khi đã đoán đúng */}
+              {gameResult && !gameResult.showConfirm && gameResult.correct && (
+                <div style={{ marginTop: '1rem' }}>
+                  <button
+                    className="btn btn-primary"
+                    onClick={finishGame}
+                  >
+                    🎉 Kết Thúc Game
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Thông báo đoán sai tạm thời */}
-          {gameResult && gameResult.isTemporary && (
+          {/* Confirm Dialog */}
+          {gameResult && gameResult.showConfirm && (
             <div className="game-phase fade-in">
-              <div className="game-result incorrect">
-                <h3>😞 Đoán Sai Rồi!</h3>
-                <p><strong>{gameResult.selected.name}</strong> không phải là kẻ giết người</p>
-                <p style={{ marginTop: '1rem', color: '#b0b0b0' }}>
-                  Hãy thử lại với nghi phạm khác
+              <div className={`game-result ${gameResult.correct ? 'correct' : 'incorrect'}`}>
+                <h3>
+                  {gameResult.correct ? '🎉 Bạn Đã Đoán Đúng!' : '😞 Bạn Đã Đoán Sai!'}
+                </h3>
+                <p>
+                  {gameResult.correct 
+                    ? `Chúc mừng! ${gameResult.selected.name} chính là kẻ giết người!`
+                    : `Tiếc quá! ${gameResult.selected.name} không phải là kẻ giết người`
+                  }
                 </p>
+                <p style={{ marginTop: '1rem', color: '#b0b0b0' }}>
+                  Bạn có muốn xác nhận kết quả này không?
+                </p>
+                
+                <div className="result-actions">
+                  <button className="btn btn-secondary" onClick={cancelGuess}>
+                    Hủy
+                  </button>
+                  <button className="btn btn-primary" onClick={confirmGuess}>
+                    Xác Nhận
+                  </button>
+                </div>
               </div>
             </div>
           )}
