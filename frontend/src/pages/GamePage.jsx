@@ -300,7 +300,7 @@ function GamePage() {
                         <div className="plot-point-relevance">
                           <span className="relevance-label">Độ liên quan:</span>
                           <div className={`relevance-badge relevance-${plotPoint.relevance}`}>
-                            {plotPoint.relevance}/3
+                            {plotPoint.relevance}/5
                           </div>
                         </div>
                       </div>
